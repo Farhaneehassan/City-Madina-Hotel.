@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>City Madina Hotel | Home Delivery</title>
+<style>
+:root{--green:#0f5132;--gold:#f3b632;--cream:#fffaf0;--ink:#17221b;--muted:#657168;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f5f6f2;color:var(--ink)}
+header{background:linear-gradient(120deg,#0b3b27,#167447);color:white;padding:22px 16px}
+.head{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(24px,4vw,36px)}.sub{margin:5px 0 0;color:#e1f2e7}
+nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--gold);color:#222}
+.btn.secondary{background:#e6eee8;color:#123b27}.btn.dark{background:#163b2b;color:white}.btn.danger{background:#ffe4e1;color:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}
+main{max-width:1100px;margin:20px auto;padding:0 14px 40px}.banner{background:#fff4d8;border:1px solid #f1d58a;border-radius:14px;padding:12px 14px;margin-bottom:16px}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:16px 0}
+input,textarea,select{width:100%;padding:11px;border:1px solid #cbd5cc;border-radius:9px;font:inherit;background:white}
+label{display:block;font-size:13px;font-weight:700;margin:10px 0 5px}
+.search{max-width:360px}.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start}
+.section{background:white;border:1px solid #e1e7e0;border-radius:15px;padding:16px;box-shadow:0 3px 12px #0c29150a}
+h2{font-size:20px;margin:0 0 12px}.category{margin:18px 0 8px;color:var(--green);font-weight:800}
+.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item{border:1px solid #e0e7e0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.item h3{font-size:16px;margin:0}.price{font-weight:800;color:var(--green);font-size:18px}.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.small{font-size:12px;color:var(--muted)}.unavailable{color:var(--red);font-size:12px;font-weight:800}
+.cart-line{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid #edf0ec}
+.qty{display:flex;align-items:center;gap:8px}.qty button{border:0;border-radius:7px;padding:4px 9px;background:#e7eee8;font-weight:800}
+.totals{margin-top:12px}.total-line{display:flex;justify-content:space-between;margin:8px 0}.grand{font-size:20px;font-weight:900;border-top:1px solid #dce4dc;padding-top:12px}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none!important}
+.admin-list{display:grid;gap:10px}.admin-item{display:grid;grid-template-columns:1fr 100px auto;gap:8px;align-items:center;border-bottom:1px solid #edf0ec;padding:8px 0}
+hr{border:0;border-top:1px solid #e2e8e2;margin:16px 0}.notice{padding:10px;border-radius:9px;background:#eaf7ee;color:#16552f;margin:10px 0}.error{background:#fff0ee;color:#9b2117}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.menu-grid{grid-template-columns:1fr 1fr}.admin-item{grid-template-columns:1fr 85px}.admin-item .actions{grid-column:1/-1}.head{align-items:flex-start}}
+@media(max-width:420px){.menu-grid{grid-template-columns:1fr}.field-grid{grid-template-columns:1fr}.search{max-width:none}}
+</style>
+</head>
+<body>
+<header><div class="head">
+<div><h1>🍗 City Madina Hotel</h1><p class="sub">Home delivery · Channapatna</p></div>
+<nav><button class="btn secondary" id="cartJump">🛒 Cart <span id="cartCount">0</span></button><button class="btn" id="adminOpen">Admin Panel</button></nav>
+</div></header>
+<main>
+<div class="banner"><strong>Fresh food, delivered to your door.</strong> Cash on Delivery · 5% GST added to the order subtotal.</div>
+<div id="notice" class="notice hidden"></div>
+<section id="customerView">
+<div class="toolbar"><div><h2 style="margin:0">Our Menu</h2><div class="small">Paneer items have been removed as requested.</div></div><input class="search" id="search" placeholder="Search menu items…" aria-label="Search menu"></div>
+<div class="layout"><section class="section"><div id="menu"></div></section>
+<aside class="section" id="cartPanel"><h2>Your Cart</h2><div id="cart"></div>
+<hr><h2>Delivery Details</h2>
+<form id="checkout">
+<label for="customerName">Full name</label><input id="customerName" required maxlength="80" placeholder="Enter your name">
+<label for="phone">10-digit mobile number</label><input id="phone" required inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" placeholder="e.g. 9876543210">
+<label for="address">Delivery address</label><textarea id="address" required rows="3" maxlength="300" placeholder="House number, street, area, landmark"></textarea>
+<label for="notes">Order notes (optional)</label><textarea id="notes" rows="2" maxlength="250" placeholder="Any special instructions"></textarea>
+<p class="small">Payment method: Cash on Delivery (COD)</p>
+<button class="btn dark" type="submit" style="width:100%">Place Order on WhatsApp</button>
+<p class="small">WhatsApp opens with your order details pre-filled. Tap Send in WhatsApp to submit the order to the hotel.</p>
+</form></aside></div></section>
+<section id="adminView" class="section hidden">
+<div class="row"><h2>Admin Panel</h2><button class="btn secondary" id="backCustomer">Back to Menu</button></div>
+<div id="adminLogin">
+<p class="small">Enter the admin PIN to manage the menu and incoming orders.</p>
+<label for="adminPin">Admin PIN</label><input id="adminPin" type="password" inputmode="numeric" placeholder="Enter your admin password">
+<button class="btn dark" id="loginBtn" style="margin-top:10px">Login</button>
+</div>
+<div id="adminTools" class="hidden">
+<div class="banner">Menu edits are saved in this browser on this device. To share changes across customer phones, this demo needs a connected database/backend.</div>
+<div class="field-grid">
+<div><label for="hotelWhatsapp">Hotel WhatsApp number (country code, digits only)</label><input id="hotelWhatsapp" inputmode="numeric" placeholder="919876543210"></div>
+<div style="display:flex;align-items:end"><button class="btn dark" id="saveSettings" style="width:100%">Save WhatsApp Number</button></div>
+</div>
+<hr><h2>Add Menu Item</h2>
+<div class="field-grid">
+<div><label for="newName">Item name</label><input id="newName" placeholder="Food item name"></div>
+<div><label for="newCategory">Category</label><input id="newCategory" placeholder="e.g. Biryani"></div>
+<div><label for="newPrice">Price (₹)</label><input id="newPrice" type="number" min="0" step="1" placeholder="100"></div>
+<div style="display:flex;align-items:end"><button class="btn dark" id="addItem" style="width:100%">Add Item</button></div>
+</div>
+<hr><h2>Manage Menu</h2><div id="adminMenu" class="admin-list"></div>
+<hr><h2>Recent Orders on This Device</h2><div id="ordersLog" class="small">Orders are sent via WhatsApp. This browser-only demo does not automatically receive WhatsApp replies or sync orders across devices.</div>
+<button class="btn danger" id="logoutBtn" style="margin-top:14px">Log out</button>
+</div></section>
+</main><footer>City Madina Hotel · Channapatna · Demo ordering website</footer>
+<script>
+const defaultItems = [
+{id:1,name:"Chicken Kabab Half",category:"Starters",price:120,available:true},
+{id:2,name:"Chicken Kabab Full",category:"Starters",price:240,available:true},
+{id:3,name:"Chicken Grilled Half",category:"Grilled Chicken",price:240,available:true},
+{id:4,name:"Chicken Grilled Full",category:"Grilled Chicken",price:470,available:true},
+{id:5,name:"Chicken Lollipop Half",category:"Starters",price:200,available:true},
+{id:6,name:"Chicken Lollipop Full",category:"Starters",price:400,available:true},
+{id:7,name:"Titar Pepper Dry",category:"Titar",price:250,available:true},
+{id:8,name:"Titar Fry",category:"Titar",price:200,available:true},
+{id:9,name:"Grilled King (Chicken)",category:"Grilled Chicken",price:400,available:true},
+{id:10,name:"Chicken Biryani",category:"Biryani & Rice",price:160,available:true},
+{id:11,name:"Mutton Biryani",category:"Biryani & Rice",price:230,available:true},
+{id:12,name:"Chicken Rice Full",category:"Biryani & Rice",price:80,available:true},
+{id:13,name:"Chicken Rice Half",category:"Biryani & Rice",price:50,available:true},
+{id:14,name:"Biryani Rice Full",category:"Biryani & Rice",price:100,available:true},
+{id:15,name:"Biryani Rice Half",category:"Biryani & Rice",price:70,available:true},
+{id:16,name:"Egg Fried Rice",category:"Fried Rice",price:140,available:true},
+{id:17,name:"Veg Fried Rice",category:"Fried Rice",price:120,available:true},
+{id:18,name:"Rumali Roti",category:"Breads",price:20,available:true},
+{id:19,name:"Kerala Parota",category:"Breads",price:20,available:true},
+{id:20,name:"Ceylon Parota",category:"Breads",price:30,available:true},
+{id:21,name:"Shawarma Roll",category:"Shawarma",price:90,available:true},
+{id:22,name:"Shawarma Special",category:"Shawarma",price:120,available:true},
+{id:23,name:"Shawarma Jumbo",category:"Shawarma",price:150,available:true},
+{id:24,name:"Chicken Shawarma",category:"Shawarma",price:110,available:true},
+{id:25,name:"Cheese Shawarma",category:"Shawarma",price:130,available:true},
+{id:26,name:"Pickle Shawarma",category:"Shawarma",price:140,available:true}
+];
+const KEY="cmh_menu_v1", SETTINGS="cmh_settings_v1", ORDERS="cmh_orders_v1";
+let items = load(KEY, defaultItems).filter(x=>!/paneer/i.test(x.name));
+let cart = {};
+let admin = false;
+let settings = load(SETTINGS,{whatsapp:"917204409745"});
+let orders = load(ORDERS,[]);
+function load(k, fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):structuredClone(fallback)}catch(e){return structuredClone(fallback)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(items))}
+function money(n){return "₹"+Number(n).toFixed(2).replace(/\.00$/,"")}
+function showNotice(msg,err=false){const el=document.getElementById("notice");el.textContent=msg;el.classList.remove("hidden","error");if(err)el.classList.add("error");window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>el.classList.add("hidden"),4500)}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderMenu(){
+ const term=document.getElementById("search").value.trim().toLowerCase();
+ const visible=items.filter(x=>x.name.toLowerCase().includes(term)||x.category.toLowerCase().includes(term));
+ const groups={};visible.forEach(x=>(groups[x.category]??=[]).push(x));
+ const root=document.getElementById("menu");root.innerHTML="";
+ if(!visible.length){root.innerHTML='<p class="small">No items match your search.</p>';return}
+ Object.entries(groups).forEach(([cat,list])=>{
+ const title=document.createElement("div");title.className="category";title.textContent=cat;root.appendChild(title);
+ const grid=document.createElement("div");grid.className="menu-grid";
+ list.forEach(x=>{const card=document.createElement("article");card.className="item";card.innerHTML=`<div class="row"><h3>${safe(x.name)}</h3></div><div class="price">${money(x.price)}</div>${x.available?`<button class="btn dark" data-add="${x.id}">Add to Cart</button>`:'<span class="unavailable">Currently unavailable</span>'}`;grid.appendChild(card)});root.appendChild(grid);
+ });
+ root.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const id=Number(b.dataset.add);cart[id]=(cart[id]||0)+1;renderCart()});
+}
+function totals(){let subtotal=0;for(const [id,q] of Object.entries(cart)){const item=items.find(x=>x.id===Number(id));if(item&&item.available)subtotal+=item.price*q}return {subtotal,gst:subtotal*.05,total:subtotal*1.05}}
+function renderCart(){
+ for(const id of Object.keys(cart)){const it=items.find(x=>x.id===Number(id));if(!it||!it.available)delete cart[id]}
+ const root=document.getElementById("cart");const count=Object.values(cart).reduce((a,b)=>a+b,0);document.getElementById("cartCount").textContent=count;
+ root.innerHTML="";
+ if(!count)root.innerHTML='<p class="small">Your cart is empty. Add food items from the menu.</p>';
+ Object.entries(cart).forEach(([id,q])=>{const it=items.find(x=>x.id===Number(id));if(!it)return;const line=document.createElement("div");line.className="cart-line";line.innerHTML=`<div><strong>${safe(it.name)}</strong><div class="small">${money(it.price)} each · ${money(it.price*q)}</div><button class="btn danger" data-remove="${id}" style="padding:4px 8px;margin-top:5px">Remove</button></div><div class="qty"><button data-minus="${id}" aria-label="Decrease">−</button><strong>${q}</strong><button data-plus="${id}" aria-label="Increase">+</button></div>`;root.appendChild(line)});
+ const t=totals();const box=document.createElement("div");box.className="totals";box.innerHTML=`<div class="total-line"><span>Subtotal</span><strong>${money(t.subtotal)}</strong></div><div class="total-line"><span>GST (5%)</span><strong>${money(t.gst)}</strong></div><div class="total-line grand"><span>Total</span><span>${money(t.total)}</span></div>`;root.appendChild(box);
+ root.querySelectorAll("[data-plus]").forEach(b=>b.onclick=()=>{cart[b.dataset.plus]=(cart[b.dataset.plus]||0)+1;renderCart()});
+ root.querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>{const id=b.dataset.minus;cart[id]--;if(cart[id]<=0)delete cart[id];renderCart()});
+ root.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{delete cart[b.dataset.remove];renderCart()});
+}
+function renderAdminMenu(){
+ const root=document.getElementById("adminMenu");root.innerHTML="";
+ items.forEach(it=>{const row=document.createElement("div");row.className="admin-item";row.innerHTML=`<div><strong>${safe(it.name)}</strong><div class="small">${safe(it.category)} · ${it.available?'Available':'Unavailable'}</div><label>Item name</label><input data-name="${it.id}" value="${safe(it.name)}"><label>Category</label><input data-cat="${it.id}" value="${safe(it.category)}"></div><div><label>Price (₹)</label><input data-price="${it.id}" type="number" min="0" step="1" value="${it.price}"><label><input data-avail="${it.id}" type="checkbox" ${it.available?'checked':''} style="width:auto"> Available</label></div><div class="actions" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn dark" data-saveitem="${it.id}">Save</button><button class="btn danger" data-delete="${it.id}">Delete</button></div>`;root.appendChild(row)});
+ root.querySelectorAll("[data-saveitem]").forEach(b=>b.onclick=()=>{const id=Number(b.dataset.saveitem),it=items.find(x=>x.id===id);const name=root.querySelector(`[data-name="${id}"]`).value.trim(),cat=root.querySelector(`[data-cat="${id}"]`).value.trim(),price=Number(root.querySelector(`[data-price="${id}"]`).value),available=root.querySelector(`[data-avail="${id}"]`).checked;if(!name||!cat||!Number.isFinite(price)||price<0){showNotice("Enter a valid item name, category and price.",true);return}if(/paneer/i.test(name)){showNotice("Paneer items are excluded from this menu.",true);return}Object.assign(it,{name,category:cat,price,available});save();renderAll();showNotice("Menu item updated.")});
+ root.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{const id=Number(b.dataset.delete);items=items.filter(x=>x.id!==id);delete cart[id];save();renderAll();showNotice("Menu item deleted.")});
+}
+function renderOrders(){const root=document.getElementById("ordersLog");if(!orders.length){root.textContent="No orders have been placed from this browser yet.";return}root.innerHTML=orders.slice().reverse().map(o=>`<div style="padding:10px 0;border-bottom:1px solid #ddd"><strong>${safe(o.name)}</strong> · ${safe(o.date)}<br>${safe(o.phone)} · ${money(o.total)}<br><span class="small">${safe(o.items)}</span></div>`).join("")}
+function renderAll(){renderMenu();renderCart();if(admin){renderAdminMenu();renderOrders()}}
+document.getElementById("search").addEventListener("input",renderMenu);
+document.getElementById("cartJump").onclick=()=>document.getElementById("cartPanel").scrollIntoView({behavior:"smooth"});
+document.getElementById("adminOpen").onclick=()=>{document.getElementById("customerView").classList.add("hidden");document.getElementById("adminView").classList.remove("hidden");document.getElementById("adminLogin").classList.toggle("hidden",admin);document.getElementById("adminTools").classList.toggle("hidden",!admin);document.getElementById("hotelWhatsapp").value=settings.whatsapp||"";};
+document.getElementById("backCustomer").onclick=()=>{document.getElementById("adminView").classList.add("hidden");document.getElementById("customerView").classList.remove("hidden")};
+document.getElementById("loginBtn").onclick=()=>{if(document.getElementById("adminPin").value==="@Farhan13"){admin=true;document.getElementById("adminLogin").classList.add("hidden");document.getElementById("adminTools").classList.remove("hidden");renderAll();showNotice("Admin panel unlocked.")}else showNotice("Incorrect PIN.",true)};
+document.getElementById("logoutBtn").onclick=()=>{admin=false;document.getElementById("adminPin").value="";document.getElementById("adminTools").classList.add("hidden");document.getElementById("adminLogin").classList.remove("hidden");showNotice("Logged out.")};
+document.getElementById("addItem").onclick=()=>{const name=document.getElementById("newName").value.trim(),category=document.getElementById("newCategory").value.trim(),price=Number(document.getElementById("newPrice").value);if(!name||!category||document.getElementById("newPrice").value===""||!Number.isFinite(price)||price<0){showNotice("Enter item name, category and a valid price.",true);return}if(/paneer/i.test(name)){showNotice("Paneer items are excluded from this menu.",true);return}items.push({id:Math.max(0,...items.map(x=>x.id))+1,name,category,price,available:true});save();document.getElementById("newName").value="";document.getElementById("newCategory").value="";document.getElementById("newPrice").value="";renderAll();showNotice("New item added.")};
+document.getElementById("saveSettings").onclick=()=>{const num=document.getElementById("hotelWhatsapp").value.replace(/\D/g,"");if(num.length<11||num.length>15){showNotice("Enter the hotel WhatsApp number with country code, e.g. 91 followed by the 10-digit number.",true);return}settings.whatsapp=num;localStorage.setItem(SETTINGS,JSON.stringify(settings));showNotice("WhatsApp number saved.")};
+document.getElementById("checkout").addEventListener("submit",e=>{e.preventDefault();const t=totals();if(!Object.keys(cart).length||t.subtotal<=0){showNotice("Please add at least one available item to your cart.",true);return}const name=document.getElementById("customerName").value.trim(),phone=document.getElementById("phone").value.trim(),address=document.getElementById("address").value.trim(),notes=document.getElementById("notes").value.trim();if(!/^\d{10}$/.test(phone)){showNotice("Mobile number must contain exactly 10 digits.",true);return}if(!name||!address){showNotice("Please enter your name and delivery address.",true);return}
+ const lines=Object.entries(cart).map(([id,q])=>{const it=items.find(x=>x.id===Number(id));return it?`${it.name} x ${q} = ${money(it.price*q)}`:null}).filter(Boolean);
+ const msg=`CITY MADINA HOTEL - NEW HOME DELIVERY ORDER%0A%0ACustomer: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0ADelivery address: ${encodeURIComponent(address)}%0A%0AItems:%0A${encodeURIComponent(lines.join("\n"))}%0A%0ASubtotal: ${encodeURIComponent(money(t.subtotal))}%0AGST (5%): ${encodeURIComponent(money(t.gst))}%0ATOTAL: ${encodeURIComponent(money(t.total))}%0APayment: Cash on Delivery${notes?"%0AOrder notes: "+encodeURIComponent(notes):""}`;
+ const order={name,phone,date:new Date().toLocaleString(),items:lines.join(", "),total:t.total};orders.push(order);localStorage.setItem(ORDERS,JSON.stringify(orders.slice(-30)));
+ const number=(settings.whatsapp||"917204409745").replace(/\D/g,"");window.open(`https://wa.me/${number}?text=${msg}`,"_blank");
+ cart={};renderAll();document.getElementById("checkout").reset();showNotice("Order details prepared in WhatsApp. Please tap Send in WhatsApp to place the order.");
+});
+renderAll();
+</script>
+</body></html>
